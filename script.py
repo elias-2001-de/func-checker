@@ -24,23 +24,18 @@ def main():
     global is_release
 
     if len(sys.argv) == 2:
-        # set release
         if sys.argv[1] == "release":
             is_release = True
-        # test then exit
         elif sys.argv[1] == "test":
-            # test 
             os.system("cargo test && wasm-pack test --node")
             return
 
-    # create build dir
     if not os.path.exists("build"):
         os.makedirs("build")
     else:
         for file in listdir("build"):
             os.remove("build/"+file)
 
-    # compile to wasm
     os.system("trunk build " +
               ("--release" if is_release else ""))
 
@@ -49,6 +44,11 @@ def main():
             minifie("dist/"+file, "build/"+file)
         else:
             shutil.copy2("dist/"+file, "build/"+file)
+        
+    with open("build/index.html", "r+") as file:
+        value = file.read()
+        file.seek(0)
+        file.write(value.replace('/index', './index'))
 
 
 if __name__ == "__main__":
