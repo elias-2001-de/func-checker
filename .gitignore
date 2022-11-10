@@ -1,3 +1,8 @@
-elm/elm-stuff
 rust/target
+rust/pkg
 rust/Cargo.lock
+
+elm/elm-stuff
+elm/elm.js
+
+build
