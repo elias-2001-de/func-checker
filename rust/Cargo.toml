@@ -9,6 +9,7 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 bool-algebra = { git = "https://github.com/eeli1/bool-algebra", version = "0.1.0" }
 wasm-bindgen = "0.2.63"
+js-sys = "0.3.60"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.13"

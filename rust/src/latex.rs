@@ -1,7 +1,7 @@
-use bool_algebra::{update_values, validate_table, Token};
+use bool_algebra::{update_values, validate_tabel, Token};
 
 pub fn latex_table(table: &Vec<bool>, names: &Vec<String>, result_name: &String) -> String {
-    if let Err(err) = validate_table(table, names) {
+    if let Err(err) = validate_tabel(table, names) {
         return format!("{}", err);
     }
 

@@ -36,6 +36,11 @@ def main():
     if not os.path.exists("build"):
         os.makedirs("build")
 
+    # elm
+    os.system("cd elm && elm make src/Main.elm --output=elm.js " +
+              "--optimize" if is_release else "")
+    minifie("elm/elm.js", "build/elm.js")
+
     # rust
     # compile to wasm
     os.system("cd rust && wasm-pack build --target no-modules --no-typescript " +
@@ -43,11 +48,6 @@ def main():
     # copy js to build
     shutil.copy2("rust/pkg/rust_bg.wasm", "build/rust_bg.wasm")
     minifie("rust/pkg/rust.js", "build/rust.js")
-
-    # elm
-    os.system("cd elm && elm make src/Main.elm --output=elm.js " +
-              "--optimize" if is_release else "")
-    minifie("elm/elm.js", "build/elm.js")
 
     # js
     minifie("web/script.js", "build/script.js")

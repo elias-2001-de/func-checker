@@ -25,10 +25,10 @@ main =
 -- PORTS
 
 
-port sendMessage : String -> Cmd msg
+port sendMessage : List String -> Cmd msg
 
 
-port messageReceiver : (String -> msg) -> Sub msg
+port messageReceiver : (List String -> msg) -> Sub msg
 
 
 
@@ -64,7 +64,7 @@ type Msg
     | Table
     | Print PrintType
     | ChangeText Int String
-    | Recv String
+    | Recv (List String)
 
 
 type Status
@@ -102,7 +102,7 @@ update msg model =
                     else
                         append model.funcs (drop (length model.funcs - 1) model.funcs)
               }
-            , sendMessage "hallo"
+            , Cmd.none
             )
 
         Table ->
@@ -112,10 +112,17 @@ update msg model =
             ( model, Cmd.none )
 
         ChangeText index text ->
-            ( { model | funcs = updateElement (indexedMap Tuple.pair model.funcs) index text }, Cmd.none )
+            ( { model | funcs = updateElement (indexedMap Tuple.pair model.funcs) index text }
+            , sendMessage (map getData (updateElement (indexedMap Tuple.pair model.funcs) index text))
+            )
 
         Recv message ->
             ( model, Cmd.none )
+
+
+getData : Func -> String
+getData f =
+    f.data
 
 
 updateElement : List ( Int, Func ) -> Int -> String -> List Func
