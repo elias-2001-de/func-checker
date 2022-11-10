@@ -10,7 +10,11 @@ async function main() {
   });
 
   app.ports.sendMessage.subscribe(function (message) {
-    console.log(check_funcs(message))
-    // app.ports.messageReceiver.send( message);
+    let result = check_funcs(message);
+    if (result[0] == null) {
+      result[0] = "Correct";
+    }
+    console.log(result);
+    app.ports.messageReceiver.send(result);
   });
 }
