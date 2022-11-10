@@ -1,4 +1,4 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 import Browser
 import Html exposing (Html, button, div, input, text)
@@ -13,7 +13,22 @@ import List exposing (append, drop, indexedMap, length, map, take)
 
 main : Program () Model Msg
 main =
-    Browser.sandbox { init = init, update = update, view = view }
+    Browser.element
+        { init = init
+        , view = view
+        , update = update
+        , subscriptions = subscriptions
+        }
+
+
+
+-- PORTS
+
+
+port sendMessage : String -> Cmd msg
+
+
+port messageReceiver : (String -> msg) -> Sub msg
 
 
 
@@ -28,13 +43,15 @@ type alias Func =
     { data : String, status : Status }
 
 
-init : Model
-init =
-    { funcs =
-        [ { data = "a&b|c", status = Correct }
-        , { data = "a&b|c", status = Correct }
-        ]
-    }
+init : () -> ( Model, Cmd Msg )
+init _ =
+    ( { funcs =
+            [ { data = "a&b|c", status = Correct }
+            , { data = "a&b|c", status = Correct }
+            ]
+      }
+    , Cmd.none
+    )
 
 
 
@@ -61,40 +78,44 @@ type PrintType
     | Markdown
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         Delete ->
-            { model
+            ( { model
                 | funcs =
                     if length model.funcs == 1 then
                         model.funcs
 
                     else
                         take (length model.funcs - 1) model.funcs
-            }
+              }
+            , Cmd.none
+            )
 
         Add ->
-            { model
+            ( { model
                 | funcs =
                     if length model.funcs == 1 then
                         append model.funcs model.funcs
 
                     else
                         append model.funcs (drop (length model.funcs - 1) model.funcs)
-            }
+              }
+            , sendMessage "hallo"
+            )
 
         Table ->
-            model
+            ( model, Cmd.none )
 
         Print _ ->
-            model
+            ( model, Cmd.none )
 
         ChangeText index text ->
-            { model | funcs = updateElement (indexedMap Tuple.pair model.funcs) index text }
+            ( { model | funcs = updateElement (indexedMap Tuple.pair model.funcs) index text }, Cmd.none )
 
-        Recv _ ->
-            model
+        Recv message ->
+            ( model, Cmd.none )
 
 
 updateElement : List ( Int, Func ) -> Int -> String -> List Func
@@ -108,6 +129,11 @@ updateElement list id text =
                 func
     in
     map toggle list
+
+
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    messageReceiver Recv
 
 
 
