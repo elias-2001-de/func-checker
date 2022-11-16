@@ -9,12 +9,12 @@ async function main() {
     node: document.getElementById("elmDiv"),
   });
 
-  app.ports.sendMessage.subscribe(function (message) {
+  app.ports.setFunc.subscribe(function (message) {
     let result = check_funcs(message);
     if (result[0] == null) {
       result[0] = "Correct";
     }
     console.log(result);
-    app.ports.messageReceiver.send(result);
+    app.ports.getStatus.send(result);
   });
 }

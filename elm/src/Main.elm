@@ -12,15 +12,15 @@ import String exposing (dropRight)
 -- PORTS
 
 
-port sendMessage : List String -> Cmd msg
+port setFunc : List String -> Cmd msg
 
 
-port messageReceiver : (List String -> msg) -> Sub msg
+port getStatus : (List String -> msg) -> Sub msg
 
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    messageReceiver Recv
+    getStatus Recv
 
 
 
@@ -104,7 +104,7 @@ update msg model =
 
         ChangeText index text ->
             ( { model | funcs = updateElement (indexedMap Tuple.pair model.funcs) index text }
-            , sendMessage (map getData (updateElement (indexedMap Tuple.pair model.funcs) index text))
+            , setFunc (map getData (updateElement (indexedMap Tuple.pair model.funcs) index text))
             )
 
         Recv message ->
