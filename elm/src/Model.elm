@@ -1,8 +1,10 @@
 module Model exposing (..)
 
+import Bootstrap.Dropdown as Dropdown
+
 
 type alias Model =
-    { funcs : List Func, printType : PrintType }
+    { funcs : List Func, printType : PrintType, dropState : Dropdown.State }
 
 
 init : () -> ( Model, Cmd Msg )
@@ -12,6 +14,7 @@ init _ =
             , { data = "a&b|c", status = Correct }
             ]
       , printType = Markdown
+      , dropState = Dropdown.initialState
       }
     , Cmd.none
     )
@@ -24,6 +27,7 @@ type Msg
     | Print PrintType
     | ChangeText Int String
     | NewStatus (List String)
+    | ChangePrintType Dropdown.State
 
 
 type Status

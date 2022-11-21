@@ -1,4 +1,4 @@
-module Update exposing (..)
+module Update exposing (update)
 
 -- import Main exposing (setFunc)
 
@@ -11,6 +11,11 @@ import Subscribe exposing (setFunc)
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        ChangePrintType state ->
+            ( { model | dropState = state }
+            , Cmd.none
+            )
+
         Delete ->
             ( { model
                 | funcs =
@@ -42,12 +47,22 @@ update msg model =
             ( model, Cmd.none )
 
         ChangeText index text ->
-            ( { model | funcs = updateElement (indexedMap Tuple.pair model.funcs) index text }
-            , setFunc (map getData (updateElement (indexedMap Tuple.pair model.funcs) index text))
-            )
+            changeText model index text
 
         NewStatus message ->
             ( { model | funcs = updateStatus (map str2Status message) model.funcs }, Cmd.none )
+
+
+changeText : Model -> Int -> String -> ( Model, Cmd Msg )
+changeText model index text =
+    ( { model
+        | funcs = updateElement (indexedMap Tuple.pair model.funcs) index text
+      }
+    , setFunc
+        (map getData
+            (updateElement (indexedMap Tuple.pair model.funcs) index text)
+        )
+    )
 
 
 getData : Func -> String
