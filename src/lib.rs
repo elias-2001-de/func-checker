@@ -1,14 +1,9 @@
-mod latex;
 mod lexer;
 
 use bool_algebra::{get_names, parse, validate_func};
+use js_sys::{Array, Object, Reflect};
 use lexer::lex;
 use wasm_bindgen::prelude::*;
-
-#[wasm_bindgen]
-pub fn greet(name: String) -> String {
-    format!("hello {} here is rust/wasm", name)
-}
 
 fn js2_vec(funcs: &JsValue) -> Result<Vec<String>, JsValue> {
     let mut result = Vec::new();
@@ -26,6 +21,40 @@ fn js2_vec(funcs: &JsValue) -> Result<Vec<String>, JsValue> {
 
     Ok(result)
 }
+
+#[wasm_bindgen]
+pub fn get_table(func: String) -> JsValue {
+    let token = match lex(func.as_str(), &vec!['&', '|', '^', '!', '>', '<', '=']) {
+        Ok(val) => val,
+        Err(err) => return JsValue::from(&err),
+    };
+    if let Err(err) = validate_func(&token) {
+        return JsValue::from(&err);
+    }
+
+    let names = get_names(&token);
+    let names_js = Array::new();
+    names.iter().for_each(|e| {
+        names_js.push(&JsValue::from(e));
+    });
+
+    let table = match parse(&token) {
+        Ok(val) => val,
+        Err(err) => return JsValue::from(&err),
+    };
+
+    let table_js = Array::new();
+    table.iter().for_each(|e| {
+        table_js.push(&JsValue::from(*e));
+    });
+
+    let obj = Object::new();
+    Reflect::set(&obj, &JsValue::from_str("names"), &names_js).unwrap();
+    Reflect::set(&obj, &JsValue::from_str("table"), &table_js).unwrap();
+
+    return obj.into();
+}
+
 #[wasm_bindgen]
 pub fn check_funcs(funcs: &JsValue) -> Vec<JsValue> {
     let mut result = Vec::new();

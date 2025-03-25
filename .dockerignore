@@ -1,8 +1,5 @@
-rust/target
-rust/pkg
-rust/Cargo.lock
-
-elm/elm-stuff
-elm/elm.js
-
-build
+/target
+/pkg
+/Cargo.lock
+/web/wasm_loader.js
+/web/func_checker_bg.wasm

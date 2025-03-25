@@ -1,2 +1,2 @@
 docker = "./Dockerfile"
-exports = [{ path = "/usr/src/app/build/", name = "func-checker" }]
+exports = [{ path = "/app/web/", name = "func-checker" }]
