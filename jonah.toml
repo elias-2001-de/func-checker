@@ -1,2 +1,3 @@
 docker = "./Dockerfile"
 exports = [{ path = "/app/web/", name = "func-checker" }]
+create_host_dirs = []
